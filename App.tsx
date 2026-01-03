@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { LifeOSProvider } from './context/LifeOSContext';
+import Auth from './components/Auth';
 import Sidebar from './components/Sidebar';
 import Dashboard from './modules/Dashboard';
 import Goals from './modules/Goals';
@@ -16,7 +17,6 @@ import Portfolio from './modules/Portfolio';
 import Settings from './modules/Settings';
 import Islam from './modules/Islam';
 import Notifications from './modules/Notifications';
-// Auth component removed as requested
 import { ModuleType } from './types';
 import { Bell, Search, Plus, X, Menu, LogOut, Infinity } from 'lucide-react';
 import { useLifeOS } from './context/LifeOSContext';
@@ -235,6 +235,11 @@ const Layout: React.FC = () => {
               </div>
           </div>
       );
+  }
+
+  // Show Auth screen if user is not logged in
+  if (!user) {
+      return <Auth />;
   }
 
   // Title mapping
