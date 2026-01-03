@@ -3,7 +3,7 @@ import React from 'react';
 import { 
   LayoutDashboard, Target, CheckSquare, Calendar, BookOpen, 
   Trophy, Heart, Briefcase, Laptop2, Wallet, UserCircle, 
-  Moon, Sun, Settings, RefreshCw, Infinity, MoonStar, Bell, X
+  Moon, Sun, Settings, RefreshCw, Infinity, MoonStar, Bell, X, LogOut
 } from 'lucide-react';
 import { ModuleType } from '../types';
 import { useLifeOS } from '../context/LifeOSContext';
@@ -16,7 +16,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ currentModule, onNavigate, isOpen, onClose }) => {
-  const { data, toggleTheme, saveData } = useLifeOS();
+  const { data, toggleTheme, saveData, logout, user } = useLifeOS();
   const [syncing, setSyncing] = React.useState(false);
 
   const handleSync = () => {
@@ -124,6 +124,15 @@ const Sidebar: React.FC<SidebarProps> = ({ currentModule, onNavigate, isOpen, on
             <button onClick={handleSync} className="p-2 rounded-lg hover:bg-bg-tertiary hover:text-white transition-all" title="Sync / Save">
               <RefreshCw size={18} className={syncing ? 'animate-spin' : ''} />
             </button>
+            {user && (
+              <button 
+                onClick={logout} 
+                className="p-2 rounded-lg hover:bg-bg-tertiary hover:text-red-500 transition-all" 
+                title="Sign Out"
+              >
+                <LogOut size={18} />
+              </button>
+            )}
           </div>
         </div>
       </aside>
