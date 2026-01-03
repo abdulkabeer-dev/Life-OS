@@ -7,7 +7,7 @@ import {
 } from '../types';
 import { generateId } from '../utils';
 import { auth, db, googleProvider } from '../firebase'; 
-import { signOut, onAuthStateChanged, User, signInWithPopup } from 'firebase/auth';
+import { signOut, onAuthStateChanged, User, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
 
 const DEFAULT_AZKAR: AzkarItem[] = [
@@ -56,13 +56,15 @@ interface LifeOSContextType {
   user: User | null;
   loading: boolean; // Exposed loading state
   login: () => void;
+  loginWithEmail: (email: string, password: string) => Promise<any>;
+  signUpWithEmail: (email: string, password: string) => Promise<any>;
   logout: () => void;
   activeNotification: Reminder | null;
   clearActiveNotification: () => void;
   updateProfile: (profile: Partial<UserProfile>) => void;
   importData: (jsonData: string) => boolean;
   clearData: () => void;
-  
+
   addTask: (task: Partial<Task>) => void;
   toggleTask: (id: string) => void;
   deleteTask: (id: string) => void;
@@ -201,6 +203,46 @@ export const LifeOSProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         throw new Error('Network error. Please check your internet connection.');
       } else {
         throw new Error(error.message || 'Sign-in failed. Please try again.');
+      }
+    }
+  };
+
+  const loginWithEmail = async (email: string, password: string) => {
+    try {
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      console.log("✅ Email login successful for user:", result.user.email);
+      return result;
+    } catch (error: any) {
+      console.error("❌ Email login failed:", error);
+      if (error.code === 'auth/user-not-found') {
+        throw new Error('No account found with this email. Please sign up first.');
+      } else if (error.code === 'auth/wrong-password') {
+        throw new Error('Incorrect password. Please try again.');
+      } else if (error.code === 'auth/invalid-email') {
+        throw new Error('Invalid email address.');
+      } else if (error.code === 'auth/user-disabled') {
+        throw new Error('This account has been disabled.');
+      } else {
+        throw new Error(error.message || 'Sign-in failed. Please try again.');
+      }
+    }
+  };
+
+  const signUpWithEmail = async (email: string, password: string) => {
+    try {
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      console.log("✅ Sign up successful for user:", result.user.email);
+      return result;
+    } catch (error: any) {
+      console.error("❌ Sign up failed:", error);
+      if (error.code === 'auth/email-already-in-use') {
+        throw new Error('This email is already registered. Please sign in instead.');
+      } else if (error.code === 'auth/weak-password') {
+        throw new Error('Password is too weak. Please use at least 6 characters.');
+      } else if (error.code === 'auth/invalid-email') {
+        throw new Error('Invalid email address.');
+      } else {
+        throw new Error(error.message || 'Sign up failed. Please try again.');
       }
     }
   };
@@ -697,7 +739,7 @@ export const LifeOSProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   return (
     <LifeOSContext.Provider value={{
-      data, user, loading, login, logout, activeNotification, clearActiveNotification,
+      data, user, loading, login, loginWithEmail, signUpWithEmail, logout, activeNotification, clearActiveNotification,
       updateProfile, importData, clearData,
       addTask, toggleTask, deleteTask,
       addGoal, updateGoal, deleteGoal,
