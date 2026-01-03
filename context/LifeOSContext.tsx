@@ -188,13 +188,31 @@ export const LifeOSProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
   const login = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
-    } catch (error) {
-      console.error("Login failed", error);
+      const result = await signInWithPopup(auth, googleProvider);
+      console.log("✅ Login successful for user:", result.user.email);
+      return result;
+    } catch (error: any) {
+      console.error("❌ Login failed:", error);
+      if (error.code === 'auth/admin-restricted-operation') {
+        throw new Error('Your Google account does not have access to this app. Please contact the administrator.');
+      } else if (error.code === 'auth/popup-closed-by-user') {
+        throw new Error('Sign-in was cancelled.');
+      } else if (error.code === 'auth/network-request-failed') {
+        throw new Error('Network error. Please check your internet connection.');
+      } else {
+        throw new Error(error.message || 'Sign-in failed. Please try again.');
+      }
     }
   };
 
-  const logout = () => signOut(auth);
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      console.log("✅ Logged out successfully");
+    } catch (error) {
+      console.error("❌ Logout failed:", error);
+    }
+  };
 
   const saveDataToFirestore = async (newData: AppData, uid: string) => {
       try {

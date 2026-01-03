@@ -1,10 +1,24 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useLifeOS } from '../context/LifeOSContext';
-import { Infinity, LogIn, Smartphone } from 'lucide-react';
+import { Infinity, LogIn, Smartphone, AlertCircle, Loader } from 'lucide-react';
 
 const Auth: React.FC = () => {
   const { login } = useLifeOS();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleLogin = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      await login();
+    } catch (err: any) {
+      console.error('Login error:', err);
+      setError(err.message || 'Failed to sign in. Please try again.');
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="h-screen w-full flex items-center justify-center bg-bg-primary relative overflow-hidden">
@@ -22,12 +36,29 @@ const Auth: React.FC = () => {
                 Your personal operating system for mastering goals, habits, and finance across all your devices.
             </p>
 
+            {error && (
+              <div className="w-full bg-red-500/20 border border-red-500 rounded-lg p-3 flex items-start gap-2 mb-4">
+                <AlertCircle size={16} className="text-red-500 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-red-400">{error}</p>
+              </div>
+            )}
+
             <button 
-                onClick={login}
-                className="w-full bg-white text-black font-bold py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-100 transition-all hover:scale-[1.02] active:scale-95"
+                onClick={handleLogin}
+                disabled={isLoading}
+                className="w-full bg-white text-black font-bold py-4 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-100 transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:scale-100"
             >
-                <LogIn size={20} />
-                <span>Sign In with Google</span>
+                {isLoading ? (
+                  <>
+                    <Loader size={20} className="animate-spin" />
+                    <span>Signing In...</span>
+                  </>
+                ) : (
+                  <>
+                    <LogIn size={20} />
+                    <span>Sign In with Google</span>
+                  </>
+                )}
             </button>
 
             <div className="w-full mt-8 pt-8 border-t border-white/10 space-y-4">
