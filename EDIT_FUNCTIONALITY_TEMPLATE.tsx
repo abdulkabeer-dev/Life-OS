@@ -3,11 +3,16 @@
  * Copy this pattern to add edit/update features to any module
  * 
  * Example: Applying to Career Module
+ * 
+ * NOTE: This is a REFERENCE template file. To use it:
+ * 1. Copy the pattern/structure
+ * 2. Apply to your module file in modules/ directory
+ * 3. Adjust imports based on your module's location
  */
 
 import React, { useState } from 'react';
-import { useLifeOS } from '../context/LifeOSContext';
-import { JobApplication } from '../types';
+import { useLifeOS } from './context/LifeOSContext';
+import { JobApplication } from './types';
 import { Edit2, Trash2, MoreVertical, X, Save, Plus } from 'lucide-react';
 
 export const EditableCareersExample: React.FC = () => {
@@ -20,10 +25,10 @@ export const EditableCareersExample: React.FC = () => {
   
   // Form fields (customize per module)
   const [formData, setFormData] = useState({
+    role: '',
     company: '',
-    position: '',
-    appliedDate: '',
-    salary: '',
+    date: '',
+    link: '',
     status: 'applied' as const,
   });
 
@@ -36,11 +41,11 @@ export const EditableCareersExample: React.FC = () => {
    */
   const startEditing = (app: JobApplication) => {
     setFormData({
+      role: app.role,
       company: app.company,
-      position: app.position,
-      appliedDate: app.appliedDate,
-      salary: String(app.salary || ''),
-      status: app.status,
+      date: app.date,
+      link: app.link || '',
+      status: app.status as any,
     });
     setEditingId(app.id);
     setShowForm(true);
@@ -51,7 +56,7 @@ export const EditableCareersExample: React.FC = () => {
    * Step 2: Save or Update
    */
   const handleSave = () => {
-    if (!formData.company || !formData.position) {
+    if (!formData.company || !formData.role) {
       alert('Please fill in required fields');
       return;
     }
@@ -78,10 +83,10 @@ export const EditableCareersExample: React.FC = () => {
    */
   const resetForm = () => {
     setFormData({
+      role: '',
       company: '',
-      position: '',
-      appliedDate: '',
-      salary: '',
+      date: '',
+      link: '',
       status: 'applied',
     });
     setEditingId(null);
@@ -117,16 +122,24 @@ export const EditableCareersExample: React.FC = () => {
 
           <input
             type="text"
-            placeholder="Position"
-            value={formData.position}
-            onChange={(e) => setFormData({ ...formData, position: e.target.value })}
+            placeholder="Role / Position"
+            value={formData.role}
+            onChange={(e) => setFormData({ ...formData, role: e.target.value })}
             className="w-full p-3 rounded-lg bg-bg-tertiary border border-border mb-3"
           />
 
           <input
             type="date"
-            value={formData.appliedDate}
-            onChange={(e) => setFormData({ ...formData, appliedDate: e.target.value })}
+            value={formData.date}
+            onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+            className="w-full p-3 rounded-lg bg-bg-tertiary border border-border mb-3"
+          />
+
+          <input
+            type="url"
+            placeholder="Application Link (optional)"
+            value={formData.link}
+            onChange={(e) => setFormData({ ...formData, link: e.target.value })}
             className="w-full p-3 rounded-lg bg-bg-tertiary border border-border mb-3"
           />
 
@@ -138,9 +151,9 @@ export const EditableCareersExample: React.FC = () => {
             className="w-full p-3 rounded-lg bg-bg-tertiary border border-border mb-4"
           >
             <option value="applied">Applied</option>
-            <option value="interviewed">Interviewed</option>
+            <option value="interviewing">Interviewing</option>
+            <option value="offer">Offer</option>
             <option value="rejected">Rejected</option>
-            <option value="accepted">Accepted</option>
           </select>
 
           <div className="flex justify-end gap-3">
@@ -168,8 +181,9 @@ export const EditableCareersExample: React.FC = () => {
             className="glass-card p-4 rounded-lg flex justify-between items-start group"
           >
             <div>
-              <h4 className="font-bold">{app.position}</h4>
+              <h4 className="font-bold">{app.role}</h4>
               <p className="text-gray-400 text-sm">{app.company}</p>
+              <p className="text-gray-500 text-xs mt-1">{app.date}</p>
             </div>
 
             {/* Menu Button */}
