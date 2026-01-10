@@ -83,6 +83,14 @@ export interface JobApplication {
   link?: string;
 }
 
+export interface Payment {
+  id: string;
+  amount: number;
+  date: string; // ISO String
+  note: string;
+  phase: string;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -90,6 +98,9 @@ export interface Project {
   status: ProjectStatus;
   deadline?: string;
   value?: number;
+  // New fields
+  advance?: number;
+  payments?: Payment[];
 }
 
 // Portfolio Types
@@ -200,17 +211,17 @@ export interface AppData {
   settings: {
     theme: 'dark' | 'light';
   };
-  career: { 
+  career: {
     applications: JobApplication[];
     interviews: any[];
     goals: any[];
   };
-  freelance: { 
+  freelance: {
     projects: Project[];
     clients: any[];
     timeEntries: any[];
   };
-  portfolio: { 
+  portfolio: {
     items: PortfolioItem[];
     certifications: Certification[];
     skills: Skill[];

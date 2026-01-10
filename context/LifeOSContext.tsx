@@ -449,7 +449,9 @@ export const LifeOSProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             client: project.client!,
             status: project.status || 'active',
             deadline: project.deadline,
-            value: project.value || 0
+            value: project.value || 0,
+            advance: project.advance || 0,
+            payments: project.payments || []
         };
 
         let newReminder: Reminder | null = null;
@@ -714,7 +716,7 @@ export const LifeOSProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 };
 
 export const useLifeOS = () => {
-  const context = useContext(LifeOSContext);
-  if (!context) throw new Error('useLifeOS must be used within a LifeOSProvider');
-  return context;
+    const context = useContext(LifeOSContext);
+    if (!context) throw new Error('useLifeOS must be used within a LifeOSProvider');
+    return context;
 };
