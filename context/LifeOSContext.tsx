@@ -448,7 +448,7 @@ export const LifeOSProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             name: project.name!,
             client: project.client!,
             status: project.status || 'active',
-            deadline: project.deadline,
+            deadline: project.deadline || null,
             value: project.value || 0,
             advance: project.advance || 0,
             payments: project.payments || []
